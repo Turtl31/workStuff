@@ -562,7 +562,7 @@ function togglePerson(person) {
 
 }
 
-function saveDay() {
+async function saveDay() {
 
     const key =
         dateKey(
@@ -578,12 +578,13 @@ function saveDay() {
         ).checked;
 
 
-    const gfOff =
+    const ernestaOff =
         document.getElementById(
             "gfOff"
         ).checked;
 
 
+    // Update local schedule
     schedule[key] = {
 
         People: {
@@ -597,35 +598,35 @@ function saveDay() {
                         ? ""
                         : document.getElementById(
                             "erikasStart"
-                            ).value,
+                          ).value,
 
                 end:
                     erikasOff
                         ? ""
                         : document.getElementById(
                             "erikasEnd"
-                            ).value
+                          ).value
 
             },
 
 
-            Girlfriend: {
+            Ernesta: {
 
-                off: gfOff,
+                off: ernestaOff,
 
                 start:
-                    gfOff
+                    ernestaOff
                         ? ""
                         : document.getElementById(
                             "gfStart"
-                            ).value,
+                          ).value,
 
                 end:
-                    gfOff
+                    ernestaOff
                         ? ""
                         : document.getElementById(
                             "gfEnd"
-                            ).value
+                          ).value
 
             }
 
@@ -634,11 +635,45 @@ function saveDay() {
     };
 
 
+    // Save to Supabase
+    const success =
+        await saveDayToDatabase(key);
+
+
+    // Don't close the window if saving failed
+    if (!success) {
+        return;
+    }
+
+
+    // Everything saved successfully
     closeModal();
 
     drawCalendar();
 
 }
+async function saveDayToDatabase(key) {
+
+    const { error } = await supabaseClient
+        .from("schedule")
+        .upsert({
+            date: key,
+            people: schedule[key].People
+        });
+
+    if (error) {
+        console.error("Database save error:", error);
+
+        alert("Failed to save the schedule.");
+
+        return false;
+    }
+
+    console.log("Saved:", key);
+
+    return true;
+}
+
 
 function closeModal() {
 
