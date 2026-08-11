@@ -10,9 +10,6 @@ body {
 }
 
 
-/* =========================
-    APP
-========================= */
 
 .app {
     width: min(1100px, 96%);
@@ -201,6 +198,10 @@ body {
     color: #aaa;
 }
 
+.both-off .shift {
+    background: #98E2C6 !important;
+    color: #1e1e1e;
+}
 
 /* =========================
     FOOTER / STATISTICS
