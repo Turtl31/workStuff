@@ -759,51 +759,27 @@ function calculateShift(start, end) {
 function calculateStatistics() {
 
     let myNormalHours = 0;
-
     let myNightHours = 0;
-
 
     let gfHours = 0;
 
-
-    // =========================
-    // ERIKAS GROSS
-    // =========================
-
     let myGross = 0;
-
-
-    // =========================
-    // ERNESTA GROSS
-    // =========================
-
     let gfGross = 0;
-
 
     const prefix =
         currentYear +
         "-" +
-        String(
-            currentMonth + 1
-        ).padStart(2, "0");
+        String(currentMonth + 1).padStart(2, "0");
 
 
-    for (
-        const [date, data]
-        of Object.entries(schedule)
-    ) {
+    for (const [date, data] of Object.entries(schedule)) {
 
         if (!date.startsWith(prefix))
-
             continue;
 
 
-        const me =
-            data.People?.[people[0]];
-
-
-        const gf =
-            data.People?.[people[1]];
+        const me = data.People?.[people[0]];
+        const gf = data.People?.[people[1]];
 
 
         // =========================
@@ -823,62 +799,30 @@ function calculateStatistics() {
                     me.end
                 );
 
-
-            const extra =
-                me.extra === true;
-
-
-            myNormalHours +=
-                shift.normal;
+            myNormalHours += shift.normal;
+            myNightHours += shift.night;
 
 
-            myNightHours +=
-                shift.night;
+            if (me.extra === true) {
 
-
-            if (extra) {
-
-                // =========================
-                // EXTRA SHIFT
-                //
-                // Day = 2x
-                // Night = 2.5x
-                // =========================
-
+                // EXTRA DAY = 2x
                 myGross +=
-                    shift.normal *
-                    11.24 *
-                    2;
+                    shift.normal * 11.24 * 2;
 
-
+                // EXTRA NIGHT = 2.5x
                 myGross +=
-                    shift.night *
-                    11.24 *
-                    2.5;
+                    shift.night * 11.24 * 2.5;
 
+            } else {
+
+                // NORMAL DAY = 1x
+                myGross +=
+                    shift.normal * 11.24;
+
+                // NORMAL NIGHT = 1.5x
+                myGross +=
+                    shift.night * 11.24 * 1.5;
             }
-
-            else {
-
-                // =========================
-                // NORMAL SHIFT
-                //
-                // Day = 1x
-                // Night = 1.5x
-                // =========================
-
-                myGross +=
-                    shift.normal *
-                    11.24;
-
-
-                myGross +=
-                    shift.night *
-                    11.24 *
-                    1.5;
-
-            }
-
         }
 
 
@@ -899,56 +843,31 @@ function calculateStatistics() {
                     gf.end
                 );
 
-
-            // =========================
-            // UNPAID 1 HOUR LUNCH
-            // =========================
-
+            // 1 hour unpaid lunch
             hours =
                 Math.max(
                     0,
                     hours - 1
                 );
 
-
             gfHours += hours;
 
 
-            const extra =
-                gf.extra === true;
+            if (gf.extra === true) {
 
-
-            if (extra) {
-
-                // =========================
-                // EXTRA DAY
-                //
-                // 2x
-                // =========================
+                // EXTRA DAY = 2x
 
                 gfGross +=
-                    hours *
-                    7.70 *
-                    2;
+                    hours * 7.70 * 2;
 
-            }
+            } else {
 
-            else {
-
-                // =========================
-                // NORMAL DAY
-                //
-                // 1x
-                // =========================
+                // NORMAL DAY = 1x
 
                 gfGross +=
-                    hours *
-                    7.70;
-
+                    hours * 7.70;
             }
-
         }
-
     }
 
 
@@ -968,63 +887,33 @@ function calculateStatistics() {
     const myNet =
         calculateNet(myGross);
 
-
     const gfNet =
         calculateNet(gfGross);
 
 
     // =========================
-    // DISPLAY HOURS
+    // DISPLAY
     // =========================
 
-    document.getElementById(
-        "myHours"
-    ).textContent =
-        myHours.toFixed(1) +
-        "h";
+    document.getElementById("myHours").textContent =
+        myHours.toFixed(1) + "h";
+
+    document.getElementById("gfHours").textContent =
+        gfHours.toFixed(1) + "h";
 
 
-    document.getElementById(
-        "gfHours"
-    ).textContent =
-        gfHours.toFixed(1) +
-        "h";
+    document.getElementById("myGross").textContent =
+        "€" + myGross.toFixed(2);
+
+    document.getElementById("gfGross").textContent =
+        "€" + gfGross.toFixed(2);
 
 
-    // =========================
-    // DISPLAY GROSS
-    // =========================
+    document.getElementById("myNet").textContent =
+        "€" + myNet.toFixed(2);
 
-    document.getElementById(
-        "myGross"
-    ).textContent =
-        "€" +
-        myGross.toFixed(2);
-
-
-    document.getElementById(
-        "gfGross"
-    ).textContent =
-        "€" +
-        gfGross.toFixed(2);
-
-
-    // =========================
-    // DISPLAY NET
-    // =========================
-
-    document.getElementById(
-        "myNet"
-    ).textContent =
-        "€" +
-        myNet.toFixed(2);
-
-
-    document.getElementById(
-        "gfNet"
-    ).textContent =
-        "€" +
-        gfNet.toFixed(2);
+    document.getElementById("gfNet").textContent =
+        "€" + gfNet.toFixed(2);
 }
 
 
